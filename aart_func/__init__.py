@@ -55,7 +55,7 @@ import matplotlib
 cmap = plt.get_cmap('plasma') # This is the official colors of the BHs!
 
 #Warnings flags
-warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
+warnings.filterwarnings("ignore", category=np.exceptions.VisibleDeprecationWarning)
 warnings.simplefilter("ignore", UserWarning)
 np.seterr(divide='ignore', invalid='ignore')
 
