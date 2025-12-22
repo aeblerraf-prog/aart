@@ -28,6 +28,13 @@ def ApparentBH(s,a,thetao,alpha,beta,m,sign,distance=D_obs):
     rP = 1 + np.sqrt(1 - a**2)
 
     #We perform the integration Eq. 8a using Eq. 20 P1 in order to get zero. 
+    # Ensure arguments to quad are scalars
+    if np.ndim(lamb) > 0: lamb = lamb.item()
+    if np.ndim(eta) > 0: eta = eta.item()
+    if np.ndim(uP) > 0: uP = uP.item()
+    if np.ndim(uM) > 0: uM = uM.item()
+    if np.ndim(rP) > 0: rP = rP.item()
+
     return sqrt(-uM*a**2)*quad(OverRint, rP,distance,args=(a,lamb,eta),points=[rP,10000])[0] +sign*ellipf(np.arcsin(np.cos(thetao)/np.sqrt(uP)), uP/uM) -2*m*ellipk(uP/uM) 
 
 def nlayers(s,a,thetao,thetad,alpha,betai,mbar):
