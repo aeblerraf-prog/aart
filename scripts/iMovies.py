@@ -1,5 +1,8 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from aart_func import *
-from params import * 
+from params import *
 from multiprocessing import get_context
 
 def mp_worker(tsnap, supergrid0, mask0, sign0, rs0, phi0, t0, supergrid1, mask1, sign1, rs1, phi1, t1, supergrid2, mask2, sign2, rs2, phi2, t2, xtend, interpolated3_R, thetao, isco, i_case, spin_case, N0, N1, N2):
