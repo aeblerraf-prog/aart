@@ -116,7 +116,7 @@ The lensing bands are computed by simply running
 
   <code> python lensingbands.py </code>
   
-The result will be stored in a HDF5 file that contains the values of the Bardeen's coordinates within each lensing band. The datasets inside the resulting file are:
+The result will be stored in a HDF5 file in the `Results` directory that contains the values of the Bardeen's coordinates within each lensing band. The datasets inside the resulting file are:
 
 * alpha: The coordinate alpha of the critical curve. The parameter <em>npointsS</em> controls the number of points used for the computation of the critical curve)
 * beta: The coordinate beta of the critical curve. 
@@ -129,7 +129,7 @@ hull\_ne: The points for the outer convex hull of the nth band. Note that hull_0
 
 This image is produced in the example code:
 
-<img src='LB.png' width="400" align="center">
+<img src='examples/LB.png' width="400" align="center">
 
 #### Ray Tracing: 
 
@@ -146,7 +146,7 @@ The result will be stored in a HDF5 file that contains source radius, angle, tim
 
 This image is produced in the example code:
 
-<img src='Rays.png' width="400" align="center">
+<img src='examples/Rays.png' width="400" align="center">
 
 #### Images: 
 
@@ -162,7 +162,7 @@ The datasets inside the resulting file are:
 
 This image is produced in the example code:
 
-<img src='BHImage.png' width="400" align="center">
+<img src='examples/BHImage.png' width="400" align="center">
 
 You can add a custom radial profile in <em>rprofs\_f.py </em>, and modify <em>intensity\_f.py</em> accordingly.
 
@@ -184,7 +184,7 @@ to produce images or a set of images, respectively. Images can be produced by us
 
 This gif is produced in the example code:
 
-<img src='BHMovie.gif' width="400" align="center">
+<img src='examples/BHMovie.gif' width="400" align="center">
 
 #### Visibility Amplitudes:
 
@@ -204,7 +204,7 @@ If in <em>params.py</em> radonfile=1, the HD5F file also contain these two datas
 
 This image is produced in the example code:
 
-<img src='Visamp.png' width="400" align="center">
+<img src='examples/Visamp.png' width="400" align="center">
 
 #### Polarization:
 

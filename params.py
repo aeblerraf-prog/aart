@@ -125,7 +125,7 @@ fov_Real=np.arctan(sizeim_Real/(dBH))/muas_to_rad #muas
 #print("FOV= ",np.round(2*fov,2),"muas")
 
 #Path where the results will be stored
-path = './Results/'
+path = os.path.join(os.getcwd(), 'Results/')
 
 # Create a directory for the results
 isExist = os.path.exists(path)
