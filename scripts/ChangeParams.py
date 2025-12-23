@@ -1,5 +1,8 @@
 #This routine allows to modify params.py from the terminal
 
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from aart_func import *
 
 def nullable_string(val):
@@ -41,7 +44,8 @@ if __name__ == "__main__":
 
   args = parser.parse_args()
 
-  for line in fileinput.input("params.py", inplace=True):
+  params_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'params.py'))
+  for line in fileinput.input(params_path, inplace=True):
 
     if line.strip().startswith('spin_case=') and args.a!=None:
         line = 'spin_case=%s\n'%args.a

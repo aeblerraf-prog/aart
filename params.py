@@ -49,7 +49,8 @@ radonangles=[0,90]
 fudge=1.5 #Fudge factor (For n>0)
 
 # Sample Equatorial Profile
-i_fname="inoisy.h5"
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+i_fname = os.path.join(PROJECT_ROOT, "inoisy.h5")
 #i_fname="hotspot.h5"
 
 # Stationary assumes a single inoisy frame. "stationary" or "dynamical" 
@@ -125,7 +126,7 @@ fov_Real=np.arctan(sizeim_Real/(dBH))/muas_to_rad #muas
 #print("FOV= ",np.round(2*fov,2),"muas")
 
 #Path where the results will be stored
-path = os.path.join(os.getcwd(), 'Results/')
+path = os.path.join(PROJECT_ROOT, 'Results/')
 
 # Create a directory for the results
 isExist = os.path.exists(path)
