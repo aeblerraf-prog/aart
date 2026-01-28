@@ -26,7 +26,6 @@ _______
 
 * **Analytical Ray-Tracing**: The main functions are located in  <em>raytracing_f</em>: For a given location in the Bardeen's plane ($\alpha,\beta$), it computes where it lands in the equatorial plane ($t,r,\theta=\pi/2,\phi$) in Boyer-Lindquist coordinates. The implementatio does it per lensing band.
 * **Accretion models**: The redshift factors now flow through <em>accretion_models.py</em> so you can switch accretion prescriptions via <em>params.py</em> (e.g., sub-Keplerian today, hooks for Novikov-Thorne or ADAF).
-* **Metric models**: The Kerr-only analytic solver is guarded via <em>metric_models.py</em>. New metrics (e.g., Damour–Solodukhin wormholes) must implement their own geodesic equations and conserved quantities before they can be selected.
 
 * **Images**: The source functions are located in <em>image.py</em>: It computes an image for a given analytical illumination profile specified in <em>rprofs_f.py</em>, if it is purely radial and analytical, or as an external file. The current version of the code supports <em>inoisy</em> (<https://arxiv.org/abs/2011.07151>) outputs, where the external file is an HDF5 with an specific structure. In this repo you can find a low-resolution example. 
 
