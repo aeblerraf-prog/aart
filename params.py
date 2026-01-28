@@ -8,6 +8,13 @@ spin_case=0.94
 #Observer's inclination  
 i_case=17
 
+# Metric model (AART currently supports Kerr only)
+metric_model="kerr"
+
+# Accretion disk model used for redshift factors
+# Options: "subkeplerian" (default), "novikov-thorne", "adaf"
+accretion_model="subkeplerian"
+
 # Distance to the BH in meters (default: M87)
 dBH=5.214795112e23  
 # BH mass-to-distance ratio (default: 1/psi= 6.2e9 Kg)

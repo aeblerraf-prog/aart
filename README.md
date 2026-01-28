@@ -24,7 +24,9 @@ _______
 
 * **Lensing Bands**: The main functions are located in <em>lb_f.py</em> : This module computes the Bardeen's coordinates inside the so-called lensing bands (currently it only computes ($0\le n\le 2$), and the extension to a higher n is possible: just compy the structure of the code and add the desired n number) on a Cartesian grid with different resolutions. 
 
-* **Analytical Ray-Tracing**: The main functions are located in  <em>raytracing_f</em>: For a given location in the Bardeen's plane ($\alpha,\beta$), it computes where it lands in the equatorial plane ($t,r,\theta=\pi/2,\phi$) in Boyer-Lindquist coordinates. The implementatio does it per lensing band. 
+* **Analytical Ray-Tracing**: The main functions are located in  <em>raytracing_f</em>: For a given location in the Bardeen's plane ($\alpha,\beta$), it computes where it lands in the equatorial plane ($t,r,\theta=\pi/2,\phi$) in Boyer-Lindquist coordinates. The implementatio does it per lensing band.
+* **Accretion models**: The redshift factors now flow through <em>accretion_models.py</em> so you can switch accretion prescriptions via <em>params.py</em> (e.g., sub-Keplerian today, hooks for Novikov-Thorne or ADAF).
+* **Metric models**: The Kerr-only analytic solver is guarded via <em>metric_models.py</em>. New metrics (e.g., Damour–Solodukhin wormholes) must implement their own geodesic equations and conserved quantities before they can be selected.
 
 * **Images**: The source functions are located in <em>image.py</em>: It computes an image for a given analytical illumination profile specified in <em>rprofs_f.py</em>, if it is purely radial and analytical, or as an external file. The current version of the code supports <em>inoisy</em> (<https://arxiv.org/abs/2011.07151>) outputs, where the external file is an HDF5 with an specific structure. In this repo you can find a low-resolution example. 
 
@@ -105,6 +107,17 @@ the AART package is illustrated. This notebook also includes examples on how to 
 ### From a terminal, using scripts: 
 
 The paramaters are always set in the file <em>params.py</em>. Once that file is modified.
+
+#### Accretion and metric model selection
+
+AART currently supports Kerr ray tracing only, but you can now configure the accretion prescription used in the redshift factors:
+
+* <code>metric_model="kerr"</code> (required; analytic ray tracing assumes Kerr integrability)
+* <code>accretion_model="subkeplerian"</code> (default)
+* <code>accretion_model="novikov-thorne"</code> (placeholder; not implemented yet)
+* <code>accretion_model="adaf"</code> (placeholder; not implemented yet)
+
+If you want to add Damour–Solodukhin or other wormhole metrics, you will need to implement new geodesic solvers in <em>raytracing_f.py</em> and update <em>accretion_models.py</em>.
 
 We present some examples in the notebook: 
 

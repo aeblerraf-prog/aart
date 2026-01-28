@@ -1,5 +1,8 @@
 from aart_func import *
+from aart_func.metric_models import ensure_kerr_metric
 from params import * 
+
+ensure_kerr_metric("lb_f")
 
 # The inverse of the radial potential Eq. 5 P1. 
 def OverRint(r,a,lamb,eta):

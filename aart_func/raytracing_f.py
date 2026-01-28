@@ -1,5 +1,8 @@
 from aart_func import *
+from aart_func.metric_models import ensure_kerr_metric
 from params import * 
+
+ensure_kerr_metric("raytracing_f")
 
 #Angular momentum and carter constant
 def conserved_quantities(alpha,beta,theta_o,a):

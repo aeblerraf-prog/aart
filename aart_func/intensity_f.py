@@ -1,169 +1,10 @@
 from aart_func import *
-from params import * 
+from aart_func.accretion_models import get_accretion_model
+from params import *
 
-def Delta(r,a):
-    """
-    Calculates the Kerr metric function \Delta(t)
-    :param r: radius of the source
-    :param a: spin of the black hole
-    """
-    return r**2-2*r+a**2
-
-def PIF(r,a):
-    """
-    Calculates PI(r) (Eq. B6 P1)
-    :param r: radius of the source
-    :param a: spin of the black hole
-    """
-    return (r**2+a**2)**2-a**2*Delta(r,a)
-
-def urbar(r,a):
-    """
-    Calculates the r (contravariant) component of the four velocity for radial infall
-    (Eq. B34b P1)
-    :param r: radius of the source
-    :param a: spin of the black hole
-    """
-    return -np.sqrt(2*r*(r**2+a**2))/(r**2)
-
-def Omegabar(r,a):
-    """
-    Calculates the angular velocity of the radial infall
-    (Eq. B32a P1)
-    :param r: radius of the source
-    :param a: spin of the black hole
-    """
-    return (2*a*r)/PIF(r,a)
-
-def Omegahat(r,a,laux):
-    """
-    Calculates the angular velocity of the sub-Keplerian orbit
-    (Eq. B39 P1)
-    :param r: radius of the source
-    :param a: spin of the black hole
-    """
-    return (a+(1-2/r)*(laux-a))/(PIF(r,a)/(r**2)-(2*a*laux)/r)
-
-def uttilde(r, a,urT,OT):
-    """
-    Calculates the t (contravariant) component of the general four velocity
-    (Eq. B52 P1)
-    :param r: radius of the source
-    :param a: spin of the black hole
-    :param urT: r (contravariant) component of the general four velocity
-    :param OT: Angular velocity of the general four velocity
-    """
-    return np.sqrt((1 + urT**2*r**2/Delta(r,a))/(1-(r**2+a**2)*OT**2-(2/r)*(1-a*OT)**2))
-
-def Ehat(r,a,laux):
-    """
-    Calculates the orbital energy of the sub-Keplerian flow
-    (Eq. B44a P1)
-    :param r: radius of the source
-    :param a: spin of the black hole
-    :param laux: sub-Keplerian specific angular momentum
-    """
-    return np.sqrt(Delta(r,a)/(PIF(r,a)/(r**2)-(4*a*laux)/r-(1-2/r)*laux**2))
-
-def nuhat(r,a,laux,Ehataux):
-    """
-    Calculates the radial velocity of the sub-Keplerian flow
-    (Eq. B45 P1)
-    :param r: radius of the source
-    :param a: spin of the black hole
-    :param laux: sub-Keplerian specific angular momentum
-    :param Ehataux: sub-Keplerian orbital energy
-    """
-    return r/Delta(r,a)*np.sqrt(np.abs(PIF(r,a)/(r**2)-(4*a*laux)/r-(1-2/r)*laux**2-Delta(r,a)/(Ehataux**2)))
-
-def lhat(r,a):
-    """
-    Calculates the rspecific angular momentum of the sub-Keplerian flow
-    (Eq. B44b P1)
-    :param r: radius of the source
-    :param a: spin of the black hole
-    """
-    return sub_kep*(r**2+a**2-2*a*np.sqrt(r))/(np.sqrt(r)*(r-2)+a)
-
-def Rint(r,a,lamb,eta):
-    """
-    Evaluates the "radial potential", for calculating the redshift factor for infalling material
-    :param r: radius of the source
-    :param a: spin of the black hole
-    :param lamb: angular momentum
-    :param eta: carter constant
-
-    :return: radial potential evaluated at the source
-    """
-    #Eqns (P2 5)
-    return (r**2 + a**2 - a*lamb)**2 - (r**2 - 2*r + a**2)*(eta + (lamb - a)**2)
-
-def gDisk(r,a,b,lamb,eta):
-    """
-    Calculates the redshift factor for a photon outside the inner-most stable circular orbit(isco) (assume circular orbit)
-    (Eq. B13 P1)
-    :param r: radius of the source
-    :param b: The +- sign of p^r
-    :param a: spin of the black hole
-    :param lamb: angular momentum
-    :param eta: Carter constant
-
-    :return: the redshift factor associated with the ray
-    """
-
-    OH=Omegahat(r,a,lhat(r,a))
-    OT=OH+(1-betaphi)*(Omegabar(r,a)-OH)
-    ur=(1-betar)*urbar(r,a)
-    ut=uttilde(r,a,ur,OT)
-    uphi=ut*OT
-    
-    return 1/(ut*(1-b*np.sign(ur)*sqrt(np.abs(Rint(r,a,lamb,eta)*ur**2))/Delta(r,a)/ut-lamb*uphi/ut))
-
-def gGas(r,a,b,lamb,eta):
-    """
-    Calculates the redshift factor for a photon inside the isco (assume infalling orbit)
-    (Eq. B13 P1)
-    :param r: radius of the source
-    :param a: spin of the black hole
-    :param b: sign for the redshift
-    :param lamb: angular momentum
-    :param eta: carter constant
-
-    :return: the redshift factor associated with the ray
-    """
-    #Calculate radius of the inner-most stable circular orbit
-    isco=rms(a)
-
-    lms=lhat(isco,a)
-    OH=Omegahat(r,a,lms)
-    OT=OH+(1-betaphi)*(Omegabar(r,a)-OH)
-
-    Ems=Ehat(isco,a,lms)
-    urhat=-Delta(r,a)/(r**2)*nuhat(r, a, lms ,Ems)*Ems
-    ur=urhat+(1-betar)*(urbar(r,a)-urhat)
-    ut=uttilde(r,a,ur,OT)
-    uphi=OT*ut
-
-    return 1/(ut*(1-b*np.sign(ur)*sqrt(np.abs(Rint(r,a,lamb,eta)*ur**2))/Delta(r,a)/ut-lamb*uphi/ut))
-
-#TODO: This expression will just work for sure for the Keplerian velocity. 
-# I need to check if it has to be modified for the general four-velocity
-def CosAng(r,a,b,lamb,eta):
-    """
-    Calculates the cosine of the emission angle
-    :param r: radius of the source
-    :param a: spin of the black hole
-    :param b: sign for the redshift
-    :param lamb: angular momentum
-    :param eta: Carter constant
-
-    :return: the  cosine of the emission angle
-    """
-    #From eta, solve for Sqrt(p_\theta/p_t)
-    kthkt=np.sqrt(eta)
-    #Sqrt(g^{\theta\theta}) Evaluated at the equatorial plane
-    thth=1/r
-    return thth*gDisk(r,a,b,lamb,eta)*kthkt
+ACCRETION_MODEL = get_accretion_model()
+G_DISK = ACCRETION_MODEL.g_disk
+G_GAS = ACCRETION_MODEL.g_gas
 
 #calculate the observed brightness for a purely radial profile
 def bright_radial(grid,mask,redshift_sign,a,rs,isco,thetao):
@@ -190,8 +31,28 @@ def bright_radial(grid,mask,redshift_sign,a,rs,isco,thetao):
     brightness = np.zeros(rs.shape[0])
     redshift_sign = redshift_sign[mask]
 
-    brightness[rs>=isco]= gDisk(rs[rs>=isco],a,redshift_sign[rs>=isco],lamb[rs>=isco],eta[rs>=isco])**gfactor*ilp.profile(rs[rs>=isco],a,gammap,mup,sigmap)
-    brightness[rs<isco]= gGas(rs[rs<isco],a,redshift_sign[rs<isco],lamb[rs<isco],eta[rs<isco])**gfactor*ilp.profile(rs[rs<isco],a,gammap,mup,sigmap)
+    brightness[rs >= isco] = (
+        G_DISK(
+            rs[rs >= isco],
+            a,
+            redshift_sign[rs >= isco],
+            lamb[rs >= isco],
+            eta[rs >= isco],
+        )
+        ** gfactor
+        * ilp.profile(rs[rs >= isco], a, gammap, mup, sigmap)
+    )
+    brightness[rs < isco] = (
+        G_GAS(
+            rs[rs < isco],
+            a,
+            redshift_sign[rs < isco],
+            lamb[rs < isco],
+            eta[rs < isco],
+        )
+        ** gfactor
+        * ilp.profile(rs[rs < isco], a, gammap, mup, sigmap)
+    )
     
     r_p = 1+np.sqrt(1-a**2)
     brightness[rs<=r_p] = 0
@@ -200,6 +61,26 @@ def bright_radial(grid,mask,redshift_sign,a,rs,isco,thetao):
     I[mask] = brightness
     
     return(I)
+
+
+# TODO: This expression will just work for sure for the Keplerian velocity.
+# I need to check if it has to be modified for the general four-velocity
+def CosAng(r,a,b,lamb,eta):
+    """
+    Calculates the cosine of the emission angle
+    :param r: radius of the source
+    :param a: spin of the black hole
+    :param b: sign for the redshift
+    :param lamb: angular momentum
+    :param eta: Carter constant
+
+    :return: the  cosine of the emission angle
+    """
+    # From eta, solve for Sqrt(p_\theta/p_t)
+    kthkt=np.sqrt(eta)
+    # Sqrt(g^{\theta\theta}) Evaluated at the equatorial plane
+    thth=1/r
+    return thth*G_DISK(r,a,b,lamb,eta)*kthkt
 
 
 #calculate the observed brightness for an arbitrary profile, passed in as the interpolation object
@@ -231,8 +112,28 @@ def fast_light(grid,mask,redshift_sign,a,isco,rs,th,interpolation,thetao):
     x_aux=rs*np.cos(th)
     y_aux=rs*np.sin(th)
  
-    brightness[rs>=isco]= gDisk(rs[rs>=isco],a,redshift_sign[rs>=isco],lamb[rs>=isco],eta[rs>=isco])**gfactor*interpolation(np.vstack([x_aux[rs>=isco],y_aux[rs>=isco]]).T)
-    brightness[rs<isco]= gGas(rs[rs<isco],a,redshift_sign[rs<isco],lamb[rs<isco],eta[rs<isco])**gfactor*interpolation(np.vstack([x_aux[rs<isco],y_aux[rs<isco]]).T)
+    brightness[rs >= isco] = (
+        G_DISK(
+            rs[rs >= isco],
+            a,
+            redshift_sign[rs >= isco],
+            lamb[rs >= isco],
+            eta[rs >= isco],
+        )
+        ** gfactor
+        * interpolation(np.vstack([x_aux[rs >= isco], y_aux[rs >= isco]]).T)
+    )
+    brightness[rs < isco] = (
+        G_GAS(
+            rs[rs < isco],
+            a,
+            redshift_sign[rs < isco],
+            lamb[rs < isco],
+            eta[rs < isco],
+        )
+        ** gfactor
+        * interpolation(np.vstack([x_aux[rs < isco], y_aux[rs < isco]]).T)
+    )
     
     r_p = 1+np.sqrt(1-a**2)
     brightness[rs<=r_p] = 0
@@ -272,8 +173,28 @@ def slow_light(grid,mask,redshift_sign,a,isco,rs,th,ts,interpolation,thetao):
     x_aux=rs*np.cos(th)
     y_aux=rs*np.sin(th)
 
-    brightness[rs>=isco]= gDisk(rs[rs>=isco],a,redshift_sign[rs>=isco],lamb[rs>=isco],eta[rs>=isco])**gfactor*interpolation(np.vstack([ts[rs>=isco],x_aux[rs>=isco],y_aux[rs>=isco]]).T)
-    brightness[rs<isco]= gGas(rs[rs<isco],a,redshift_sign[rs<isco],lamb[rs<isco],eta[rs<isco])**gfactor*interpolation(np.vstack([ts[rs<isco],x_aux[rs<isco],y_aux[rs<isco]]).T)
+    brightness[rs >= isco] = (
+        G_DISK(
+            rs[rs >= isco],
+            a,
+            redshift_sign[rs >= isco],
+            lamb[rs >= isco],
+            eta[rs >= isco],
+        )
+        ** gfactor
+        * interpolation(np.vstack([ts[rs >= isco], x_aux[rs >= isco], y_aux[rs >= isco]]).T)
+    )
+    brightness[rs < isco] = (
+        G_GAS(
+            rs[rs < isco],
+            a,
+            redshift_sign[rs < isco],
+            lamb[rs < isco],
+            eta[rs < isco],
+        )
+        ** gfactor
+        * interpolation(np.vstack([ts[rs < isco], x_aux[rs < isco], y_aux[rs < isco]]).T)
+    )
 
     r_p = 1+np.sqrt(1-a**2)
     brightness[rs<=r_p] = 0
@@ -344,8 +265,20 @@ def gfactorf(grid,mask,redshift_sign,a,isco,rs,thetao):
     gfact = np.zeros(rs.shape[0])
     redshift_sign = redshift_sign[mask]
     
-    gfact[rs>=isco]= gDisk(rs[rs>=isco],a,redshift_sign[rs>=isco],lamb[rs>=isco],eta[rs>=isco])
-    gfact[rs<isco]= gGas(rs[rs<isco],a,redshift_sign[rs<isco],lamb[rs<isco],eta[rs<isco])
+    gfact[rs >= isco] = G_DISK(
+        rs[rs >= isco],
+        a,
+        redshift_sign[rs >= isco],
+        lamb[rs >= isco],
+        eta[rs >= isco],
+    )
+    gfact[rs < isco] = G_GAS(
+        rs[rs < isco],
+        a,
+        redshift_sign[rs < isco],
+        lamb[rs < isco],
+        eta[rs < isco],
+    )
     
     r_p = 1+np.sqrt(1-a**2)
     gfact[rs<=r_p] = 0
@@ -395,8 +328,26 @@ def flare_model(grid,mask,redshift_sign,a,rs,th,ts,thetao,rwidth,delta_t):
     # x0 and y0 is now a function of t, where one can specify an arbitrary equitorial orbit
     brightness = np.exp(-(x_aux-x0(ts+delta_t))**2/rwidth**2-(y_aux-y0(ts+delta_t))**2/rwidth**2)
     
-    brightness[rs>=isco]*= gDisk(rs[rs>=isco],a,redshift_sign[rs>=isco],lamb[rs>=isco],eta[rs>=isco])**gfactor
-    brightness[rs<isco]*= gGas(rs[rs<isco],a,redshift_sign[rs<isco],lamb[rs<isco],eta[rs<isco])**gfactor
+    brightness[rs >= isco] *= (
+        G_DISK(
+            rs[rs >= isco],
+            a,
+            redshift_sign[rs >= isco],
+            lamb[rs >= isco],
+            eta[rs >= isco],
+        )
+        ** gfactor
+    )
+    brightness[rs < isco] *= (
+        G_GAS(
+            rs[rs < isco],
+            a,
+            redshift_sign[rs < isco],
+            lamb[rs < isco],
+            eta[rs < isco],
+        )
+        ** gfactor
+    )
 
     r_p = 1+np.sqrt(1-a**2)
     brightness[rs<=r_p] = 0
